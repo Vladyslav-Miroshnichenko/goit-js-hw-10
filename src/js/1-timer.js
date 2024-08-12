@@ -12,6 +12,7 @@ const secondsEl = document.querySelector('[data-seconds]');
 
 let userSelectedDate = null;
 let countdownInterval = null;
+startBtn.disabled = true;
 
 flatpickr(datetimePicker, {
   enableTime: true,
@@ -20,6 +21,15 @@ flatpickr(datetimePicker, {
   minuteIncrement: 1,
   onClose(selectedDates) {
     userSelectedDate = selectedDates[0];
+    if (userSelectedDate && userSelectedDate > new Date()) {
+      startBtn.disabled = false;
+    } else {
+      startBtn.disabled = true;
+      iziToast.warning({
+        message: 'Please choose a valid future date',
+        position: 'topCenter',
+      });
+    }
   },
 });
 
@@ -31,6 +41,8 @@ startBtn.addEventListener('click', () => {
     });
     return;
   }
+  startBtn.disabled = true;
+  datetimePicker.disabled = true;
 
   if (countdownInterval) {
     clearInterval(countdownInterval);
@@ -41,6 +53,8 @@ startBtn.addEventListener('click', () => {
 
     if (timeLeft <= 0) {
       clearInterval(countdownInterval);
+      startBtn.disabled = false;
+      datetimePicker.disabled = false;
       return;
     }
 
